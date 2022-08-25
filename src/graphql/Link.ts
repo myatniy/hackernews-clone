@@ -1,4 +1,4 @@
-import { extendType, nonNull, objectType, stringArg } from "nexus";
+import { extendType, idArg, nonNull, objectType, stringArg } from "nexus";
 import { NexusGenObjects } from "../../nexus-typegen";
 
 export const Link = objectType({
@@ -30,6 +30,21 @@ export const LinkQuery = extendType({
             type: "Link",
             resolve() {
                 return links;
+            },
+        });
+        t.nonNull.field("link", {
+            type: "Link",
+            args: {
+                id: nonNull(idArg()),
+            },
+
+            resolve(root, args) {
+                const { id } = args;
+                const resolvedPost = links.find(
+                    ({ id: existingId }) => existingId.toString() === id
+                );
+
+                return resolvedPost ?? { id: -1, description: "Not Found", url: "Not Found" };
             },
         });
     },
