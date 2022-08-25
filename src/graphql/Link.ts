@@ -94,5 +94,27 @@ export const LinkMutation = extendType({
                 return links[resolvedLinkIndex];
             },
         });
+        t.nonNull.field("deleteLink", {
+            type: "Link",
+            args: {
+                id: nonNull(idArg()),
+            },
+
+            resolve(root, args) {
+                const { id } = args;
+
+                const linkToDelete = links.find(
+                    ({ id: existingId }) => existingId.toString() === id
+                );
+
+                const linksWithoutDeletedLink = links.filter(
+                    ({ id: existingId }) => existingId.toString() !== id
+                );
+
+                links = linksWithoutDeletedLink;
+
+                return linkToDelete as NexusGenObjects["Link"];
+            },
+        });
     },
 });
